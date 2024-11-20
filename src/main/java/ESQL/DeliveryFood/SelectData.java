@@ -212,4 +212,24 @@ public class SelectData {
             }
         }
     }
+
+    // 사장님이 소유한 메뉴인지 확인하는 메소드
+    public boolean isMenuOwnedByOwner(int Mid, int Oid) {
+        String query = "SELECT COUNT(*) FROM menu WHERE Mid = ? AND Oid = ?";
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(query)) {
+
+            pstmt.setInt(1, Mid);
+            pstmt.setInt(2, Oid);
+            ResultSet rs = pstmt.executeQuery();
+
+            if (rs.next() && rs.getInt(1) > 0) {
+                return true; // 해당 메뉴가 사장님의 메뉴임
+            }
+        } catch (SQLException e) {
+            System.out.println("메뉴 소유권 확인 중 오류 발생 (SQLCODE: " + e.getErrorCode() + "): " + e.getMessage());
+        }
+        return false; // 메뉴가 사장님 소유가 아님
+    }
+
 }
