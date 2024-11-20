@@ -81,7 +81,7 @@ public class Update {
         }
     }
 
-    // 손님 개인정보 수정 메서드
+    // 손님 개인정보 수정값이 테이블에 저장되는 직접적인 메소드
     private void updateCustomerField(String fieldName, String newValue, int Cid) {
         String query = "UPDATE consumer SET " + fieldName + " = ? WHERE Cid = ?";
 
@@ -106,7 +106,7 @@ public class Update {
         }
     }
 
-    // 사장님 개인정보 수정
+    // 사장님 개인정보 수정값이 테이블에 저장되는 직접적인 메소드
     private void updateOwnerField(String fieldName, String newValue, int Oid) {
         String query = "UPDATE owner SET " + fieldName + " = ? WHERE Oid = ?";
 
