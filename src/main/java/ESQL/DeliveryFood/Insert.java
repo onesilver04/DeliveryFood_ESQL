@@ -137,6 +137,7 @@ public class Insert { // 데이터 존재 여부 확인 메서드
     }
 
     // menu 테이블에 데이터 삽입
+    // is_active에 대한 정보는 삽입하지 않고 테이블 생성 시 자동적으로 활성화되게 만듦.
     public void setMenuData() {
         try (Connection conn = DatabaseConnection.getConnection();
              Statement st = conn.createStatement()) {
