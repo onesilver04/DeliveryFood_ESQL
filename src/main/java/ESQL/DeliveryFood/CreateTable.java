@@ -67,35 +67,21 @@ public class CreateTable {
                 "Oid INT, " +
                 "Mname VARCHAR(50) NOT NULL, " +
                 "Mprice INT NOT NULL, " +
-                "FOREIGN KEY (Oid) REFERENCES owner(Oid))";
+                "is_active BOOLEAN DEFAULT TRUE, " + // is_active 열 포함
+                "FOREIGN KEY (Oid) REFERENCES owner(Oid)" +
+                ")";
 
         try (Connection conn = DatabaseConnection.getConnection();
              Statement stmt = conn.createStatement()) {
 
             if (isTableExists(conn, "menu")) {
                 System.out.println("menu 테이블이 이미 존재합니다.");
-                // is_active 열이 있는지 확인하고, 없으면 추가
-                String checkColumnSQL = "SHOW COLUMNS FROM menu LIKE 'is_active'";
-                try (ResultSet rs = stmt.executeQuery(checkColumnSQL)) {
-                    if (!rs.next()) { // is_active 열이 없으면 추가
-                        String addColumnSQL = "ALTER TABLE menu ADD COLUMN is_active BOOLEAN DEFAULT TRUE";
-                        stmt.executeUpdate(addColumnSQL);
-                        System.out.println("menu 테이블에 'is_active' 열이 성공적으로 추가되었습니다.");
-                    } else {
-                        System.out.println("menu 테이블에 'is_active' 열이 이미 존재합니다.");
-                    }
-                }
                 return;
             }
 
             // 테이블 생성
             stmt.execute(createTableSQL);
             System.out.println("menu 테이블이 성공적으로 생성되었습니다.");
-
-            // is_active 열 추가
-            String addColumnSQL = "ALTER TABLE menu ADD COLUMN is_active BOOLEAN DEFAULT TRUE";
-            stmt.executeUpdate(addColumnSQL);
-            System.out.println("menu 테이블에 'is_active' 열이 성공적으로 추가되었습니다.");
         } catch (SQLException e) {
             System.out.println("menu 테이블 생성 중 오류 발생 (SQLCODE: " + e.getErrorCode() + "): " + e.getMessage());
         }
@@ -109,24 +95,22 @@ public class CreateTable {
                 "quantity INT NOT NULL, " +
                 "order_date DATE NOT NULL, " +
                 "FOREIGN KEY (Cid) REFERENCES consumer(Cid), " +
-                "FOREIGN KEY (Mid) REFERENCES menu(Mid))";
+                "FOREIGN KEY (Mid) REFERENCES menu(Mid) ON DELETE SET NULL" + // 외래 키 조건 추가
+                ")";
 
         try (Connection conn = DatabaseConnection.getConnection();
              Statement stmt = conn.createStatement()) {
+
             if (isTableExists(conn, "orders")) {
                 System.out.println("orders 테이블이 이미 존재합니다.");
-            } else {
-                stmt.execute(createTableSQL);
-                System.out.println("orders 테이블이 성공적으로 생성되었습니다.");
+                return;
             }
-            // 기존 외래 키 제거 및 새 외래 키 추가
-            String dropForeignKeySQL = "ALTER TABLE orders DROP FOREIGN KEY orders_ibfk_2";
-            stmt.executeUpdate(dropForeignKeySQL);
-            String addForeignKeySQL = "ALTER TABLE orders ADD CONSTRAINT orders_ibfk_2 FOREIGN KEY (Mid) REFERENCES menu (Mid) ON DELETE SET NULL";
-            stmt.executeUpdate(addForeignKeySQL);
+
+            // 테이블 생성
+            stmt.execute(createTableSQL);
+            System.out.println("orders 테이블이 성공적으로 생성되었습니다.");
         } catch (SQLException e) {
             System.out.println("orders 테이블 생성 중 오류 발생 (SQLCODE: " + e.getErrorCode() + "): " + e.getMessage());
-            System.exit(1);
         }
     }
 }
