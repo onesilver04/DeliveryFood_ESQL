@@ -14,12 +14,13 @@ public class InsertData {
              PreparedStatement checkStmt = conn.prepareStatement(checkQuery)) {
             checkStmt.setInt(1, Cid);
             ResultSet rs = checkStmt.executeQuery();
-            rs.next();
-            return rs.getInt(1) == 0; // 중복된 아이디가 없으면 true 반환
-        } catch (SQLException e) {
-            if (e.getErrorCode() != 0) { // SQLCODE
-                System.out.println("손님 중복된 아이디 오류 발생 (SQLCODE: " + e.getErrorCode() + "): " + e.getMessage());
+            if (rs.next()) {
+                // ID가 존재하면 true 반환
+                return rs.getInt(1) > 0;
             }
+            return false; // ID가 존재하지 않으면 false 반환
+        } catch (SQLException e) {
+            System.out.println("손님 중복된 ID 확인 중 오류 발생 (SQLCODE: " + e.getErrorCode() + "): " + e.getMessage());
             return false;
         }
     }
@@ -27,17 +28,17 @@ public class InsertData {
     // Owner ID 중복 여부 확인
     public boolean isOwnerIdAvailable(int Oid) {
         String checkQuery = "SELECT COUNT(*) FROM owner WHERE Oid = ?";
-
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement checkStmt = conn.prepareStatement(checkQuery)) {
             checkStmt.setInt(1, Oid);
             ResultSet rs = checkStmt.executeQuery();
-            rs.next();
-            return rs.getInt(1) == 0; // 중복된 아이디가 없으면 true 반환
-        } catch (SQLException e) {
-            if (e.getErrorCode() != 0) { // SQLCODE
-                System.out.println("사장님 중복된 아이디 오류 발생 (SQLCODE: " + e.getErrorCode() + "): " + e.getMessage());
+            if (rs.next()) {
+                // ID가 존재하면 true 반환
+                return rs.getInt(1) > 0;
             }
+            return false; // ID가 존재하지 않으면 false 반환
+        } catch (SQLException e) {
+            System.out.println("사장님 중복된 ID 확인 중 오류 발생 (SQLCODE: " + e.getErrorCode() + "): " + e.getMessage());
             return false;
         }
     }
