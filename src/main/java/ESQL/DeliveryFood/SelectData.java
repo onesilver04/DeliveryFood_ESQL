@@ -72,48 +72,6 @@ public class SelectData {
         }
     }
 
-    // 특정 손님 ID가 존재하는지 확인하는 메서드(로그인 시 필요)
-    public boolean isConsumerExists(int Cid) {
-        String query = "SELECT COUNT(*) FROM consumer WHERE Cid = ?";
-
-        try (Connection conn = DatabaseConnection.getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(query)) {
-
-            pstmt.setInt(1, Cid); // 손님 ID를 쿼리에 바인딩
-            ResultSet rs = pstmt.executeQuery();
-
-            // 결과가 1 이상이면 해당 손님 ID가 존재
-            if (rs.next() && rs.getInt(1) > 0) {
-                return true;
-            }
-
-        } catch (SQLException e) {
-            if (e.getErrorCode() != 0) { // SQLCODE
-                System.out.println("손님 ID 확인 중 오류 발생 (SQLCODE: " + e.getErrorCode() + "): " + e.getMessage());
-            }
-        }
-        return false; // 존재하지 않으면 false 반환
-    }
-    // 사장님 아이디 존재 확인
-    public boolean isOwnerExists(int Oid) {
-        String query = "SELECT COUNT(*) FROM owner WHERE Oid = ?";
-
-        try (Connection conn = DatabaseConnection.getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(query)) {
-
-            pstmt.setInt(1, Oid);
-            ResultSet rs = pstmt.executeQuery();
-
-            return rs.next() && rs.getInt(1) > 0;
-
-        } catch (SQLException e) {
-            if (e.getErrorCode() != 0) { // SQLCODE
-                System.out.println("사장님 ID 확인 중 오류 발생 (SQLCODE: " + e.getErrorCode() + "): " + e.getMessage());
-            }
-        }
-        return false;
-    }
-
     // 특정 메뉴 정보 조회 메서드
     public boolean selectMenuByOwner(int Oid) {
         String query = "SELECT Mid, Mname, Mprice FROM menu WHERE Oid = ? AND is_active = TRUE";
